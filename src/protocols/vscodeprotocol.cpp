@@ -866,6 +866,18 @@ static HRESULT HandleCommand(std::shared_ptr<IDebugger> &sharedDebugger, std::st
         body["breakpoints"] = breakpoints;
 
         return Status;
+    } },
+    { "applyDeltas", [&](const json &arguments, json &body) {
+        std::string dllFileName = arguments.at("dllFileName").get<std::string>();
+        std::string deltaMD = arguments.at("metadataPath").get<std::string>();
+        std::string deltaIL = arguments.at("ilPath").get<std::string>();
+        std::string deltaPDB = arguments.value("pdbPath", std::string());
+        std::string lineUpdates = arguments.value("lineUpdatesPath", std::string());
+        return sharedDebugger->HotReloadApplyDeltas(dllFileName, deltaMD, deltaIL, deltaPDB, lineUpdates);
+    } },
+    { "setHotReload", [&](const json &arguments, json &body) {
+        bool enable = arguments.value("enable", false);
+        return sharedDebugger->SetHotReload(enable);
     } }
     };
 
