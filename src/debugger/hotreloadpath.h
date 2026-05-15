@@ -27,7 +27,13 @@ inline bool IsAbsolutePath(const std::string &path)
 inline std::string GetDirectoryName(const std::string &path)
 {
     std::size_t i = path.find_last_of("/\\");
-    return i == std::string::npos ? std::string() : path.substr(0, i);
+    if (i == std::string::npos)
+        return std::string();
+
+    if (i == 0)
+        return path.substr(0, 1);
+
+    return path.substr(0, i);
 }
 
 inline std::string Combine(const std::string &directory, const std::string &fileName)
@@ -49,11 +55,14 @@ inline std::string Combine(const std::string &directory, const std::string &file
 inline std::string GetStartupHookPath()
 {
 #ifdef NCDB_DOTNET_STARTUP_HOOK
-    std::string hookPath(NCDB_DOTNET_STARTUP_HOOK);
-    if (IsAbsolutePath(hookPath))
-        return hookPath;
+    static const std::string hookPath = []() {
+        std::string path(NCDB_DOTNET_STARTUP_HOOK);
+        if (IsAbsolutePath(path))
+            return path;
 
-    return Combine(GetDirectoryName(GetExeAbsPath()), hookPath);
+        return Combine(GetDirectoryName(GetExeAbsPath()), path);
+    }();
+    return hookPath;
 #else
     return std::string();
 #endif
