@@ -5,6 +5,7 @@
 #include "debugger/breakpoint_hotreload.h"
 #include "debugger/breakpointutils.h"
 #include "debugger/hotreloadhelpers.h"
+#include "debugger/hotreloadpath.h"
 #include "debugger/evalhelpers.h"
 #include "metadata/modules.h"
 
@@ -56,7 +57,7 @@ HRESULT HotReloadBreakpoint::ManagedCallbackLoadModuleAll(ICorDebugModule *pModu
 {
 #ifdef NCDB_DOTNET_STARTUP_HOOK
 
-    static std::string dllName(NCDB_DOTNET_STARTUP_HOOK);
+    static std::string dllName(HotReloadPath::GetStartupHookPath());
 
     std::lock_guard<std::mutex> lock(m_reloadMutex);
 

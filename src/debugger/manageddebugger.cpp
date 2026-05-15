@@ -36,6 +36,7 @@
 #include "debugger/breakpoints_interop_line.h"
 #include "debugger/breakpoints.h"
 #include "debugger/hotreloadhelpers.h"
+#include "debugger/hotreloadpath.h"
 #include "debugger/manageddebugger.h"
 #include "debugger/managedcallback.h"
 #include "debugger/callbacksqueue.h"
@@ -634,11 +635,12 @@ static void SetCustomEnvironmentArgs(std::map<std::string, std::string> &env, bo
 #ifdef NCDB_DOTNET_STARTUP_HOOK
     if (hotReload)
     {
+        const std::string startupHook = HotReloadPath::GetStartupHookPath();
         auto find = env.find(envDOTNET_STARTUP_HOOKS);
         if (find != env.end())
-            find->second = find->second + delimiterDOTNET_STARTUP_HOOKS + NCDB_DOTNET_STARTUP_HOOK;
+            find->second = find->second + delimiterDOTNET_STARTUP_HOOKS + startupHook;
         else
-            env[envDOTNET_STARTUP_HOOKS] = NCDB_DOTNET_STARTUP_HOOK;
+            env[envDOTNET_STARTUP_HOOKS] = startupHook;
     }
 #else
     (void)hotReload; // suppress warning about unused param
