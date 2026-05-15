@@ -413,14 +413,15 @@ if (BUILD_MANAGED AND NCDB_DOTNET_STARTUP_HOOK)
     set(NCDBHOOK_DLL_NAME ncdbhook.dll)
     set(NCDBHOOK_DOTNET_BUILD_RESULT ${CMAKE_CURRENT_BINARY_DIR}/${NCDBHOOK_DLL_NAME})
     set(NCDB_HOOK_TargetFramework "net6.0")
+    file(GLOB NCDBHOOK_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/ncdbhook/*.cs")
 
     find_program(DOTNETCLI dotnet PATHS "${DOTNET_DIR}" ENV PATH NO_DEFAULT_PATH)
 
     # Build Debug only, code must be not optimized.
     add_custom_command(OUTPUT ${NCDBHOOK_DOTNET_BUILD_RESULT}
-      COMMAND NCDB_HOOK_TargetFramework=${NCDB_HOOK_TargetFramework} ${DOTNETCLI} publish ${NCDBHOOK_PROJECT} -c Debug -o ${CMAKE_CURRENT_BINARY_DIR} /p:BaseIntermediateOutputPath=${CMAKE_CURRENT_BINARY_DIR}/obj/ /p:BaseOutputPath=${CMAKE_CURRENT_BINARY_DIR}/bin/
+      COMMAND ${CMAKE_COMMAND} -E env "NCDB_HOOK_TargetFramework=${NCDB_HOOK_TargetFramework}" ${DOTNETCLI} publish ${NCDBHOOK_PROJECT} -c Debug -o ${CMAKE_CURRENT_BINARY_DIR} /p:BaseIntermediateOutputPath=${CMAKE_CURRENT_BINARY_DIR}/obj/ /p:BaseOutputPath=${CMAKE_CURRENT_BINARY_DIR}/bin/
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-      DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/ncdbhook/*.cs" "${NCDBHOOK_PROJECT}"
+      DEPENDS ${NCDBHOOK_SOURCES} "${NCDBHOOK_PROJECT}"
       COMMENT "Compiling ${NCDBHOOK_DLL_NAME}"
       VERBATIM
     )
